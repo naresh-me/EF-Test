@@ -41,15 +41,15 @@ namespace WPF_EF_Assignment
             _unitOfWork = new UnitOfWork(new AppDbContext());
             _logger = LogManager.GetCurrentClassLogger();
             InitializeComponent();
-            DataGrid.ItemsSource = LoadLotDetails();
+            LoadLotDetails();
         }
 
-        private dynamic LoadLotDetails()
+        private void LoadLotDetails()
         {
             try
             {
                 var lotBatch = _unitOfWork.ReagentLotRepository.GetWithInclude("ReagentBatch").ToList();
-                return lotBatch.Select(lb => new DataItems
+                DataGrid.ItemsSource = lotBatch.Select(lb => new DataItems
                 {
                     BatchLotNumber = lb.ReagentBatch.BatchLotNumber,
                     BatchExpiryDate = lb.ReagentBatch.ExpiryDate.ToString("yyyy-MM-dd"),
@@ -68,8 +68,6 @@ namespace WPF_EF_Assignment
             {
                 _logger.Error(ex);
             }
-
-            return null;
         }
 
         private void BrowseFile(object sender, RoutedEventArgs e)
@@ -132,6 +130,7 @@ namespace WPF_EF_Assignment
                     _unitOfWork.Save();
                 }
                 MessageBox.Show("Succefully Uploaded data into the system!");
+                LoadLotDetails();
             }
             catch (Exception ex)
             {
